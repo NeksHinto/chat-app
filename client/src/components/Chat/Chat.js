@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 import queryString from "query-string"; // -> get data from url
 import io from "socket.io-client";
+
+import TextContainer from '../TextContainer/TextContainer';
+import Messages from '../Messages/Message/Message';
+import InfoBar from '../InfoBar/InfoBar';
+import Input from '../Input/Input';
 
 import "./Chat.css";
 
@@ -9,7 +14,8 @@ const ENDPOINT = "localhost:5000";
 
 let socket;
 
-const Chat = () => { // -> location comes from React Router (url params)
+const Chat = () => {
+	// -> location comes from React Router (url params)
 	let location = useLocation();
 
 	const [name, setName] = useState("");
@@ -23,7 +29,7 @@ const Chat = () => { // -> location comes from React Router (url params)
 		socket = io(ENDPOINT); // -> instance of a socket
 		setRoom(room);
 		setName(name);
-		socket.emit("join", { name, room }, ({error}) => {
+		socket.emit("join", { name, room }, ({ error }) => {
 			if (error) {
 				alert(error);
 			}
@@ -49,12 +55,15 @@ const Chat = () => { // -> location comes from React Router (url params)
 	return (
 		<div className="outerContainer">
 			<div className="container">
-				<input
-					value={message}
-					onChange={(event) => setMessage(event.target.value)}
-					onKeyDown={(event) => event.key === 'Enter' ? sendMessage(event) : null}
+				<InfoBar room={room} />
+				<Messages messages={messages} name={name} />
+				<Input
+					message={message}
+					setMessage={setMessage}
+					sendMessage={sendMessage}
 				/>
 			</div>
+			<TextContainer users={users}/>
 		</div>
 	);
 };
